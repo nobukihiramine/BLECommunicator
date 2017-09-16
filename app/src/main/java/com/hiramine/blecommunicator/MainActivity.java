@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	private Button   mButton_ReadChara1;    // キャラクタリスティック１の読み込みボタン
 	private Button   mButton_ReadChara2;    // キャラクタリスティック２の読み込みボタン
 	private CheckBox mCheckBox_NotifyChara1;    // キャラクタリスティック１の変更通知ON/OFFチェックボックス
+	private Button   mButton_WriteHello;        // キャラクタリスティック２への「Hello」書き込みボタン
+	private Button   mButton_WriteWorld;        // キャラクタリスティック２への「World」書き込みボタン
 
 	// BluetoothGattコールバック
 	private final BluetoothGattCallback mGattcallback = new BluetoothGattCallback()
@@ -91,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 						mButton_ReadChara1.setEnabled( false );
 						mButton_ReadChara2.setEnabled( false );
 						mCheckBox_NotifyChara1.setEnabled( false );
+						mButton_WriteHello.setEnabled( false );
+						mButton_WriteWorld.setEnabled( false );
 					}
 				} );
 				return;
@@ -124,6 +128,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 							mButton_ReadChara1.setEnabled( true );
 							mButton_ReadChara2.setEnabled( true );
 							mCheckBox_NotifyChara1.setEnabled( true );
+							mButton_WriteHello.setEnabled( true );
+							mButton_WriteWorld.setEnabled( true );
 						}
 					} );
 					continue;
@@ -191,6 +197,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				return;
 			}
 		}
+
+		// キャラクタリスティックが書き込まれたときの処理
+		@Override
+		public void onCharacteristicWrite( BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status )
+		{
+			if( BluetoothGatt.GATT_SUCCESS != status )
+			{
+				return;
+			}
+			// キャラクタリスティックごとに個別の処理
+			if( UUID_CHARACTERISTIC_PRIVATE2.equals( characteristic.getUuid() ) )
+			{    // キャラクタリスティック２：データサイズは、8バイト（文字列を想定。半角文字8文字）
+				runOnUiThread( new Runnable()
+				{
+					public void run()
+					{
+						// GUIアイテムの有効無効の設定
+						// 書き込みボタンを有効にする
+						mButton_WriteHello.setEnabled( true );
+						mButton_WriteWorld.setEnabled( true );
+					}
+				} );
+				return;
+			}
+		}
 	};
 
 	@Override
@@ -210,6 +241,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		mButton_ReadChara2.setOnClickListener( this );
 		mCheckBox_NotifyChara1 = (CheckBox)findViewById( R.id.checkbox_notifychara1 );
 		mCheckBox_NotifyChara1.setOnClickListener( this );
+		mButton_WriteHello = (Button)findViewById( R.id.button_writehello );
+		mButton_WriteHello.setOnClickListener( this );
+		mButton_WriteWorld = (Button)findViewById( R.id.button_writeworld );
+		mButton_WriteWorld.setOnClickListener( this );
 
 		// Android端末がBLEをサポートしてるかの確認
 		if( !getPackageManager().hasSystemFeature( PackageManager.FEATURE_BLUETOOTH_LE ) )
@@ -246,6 +281,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		mButton_ReadChara2.setEnabled( false );
 		mCheckBox_NotifyChara1.setChecked( false );
 		mCheckBox_NotifyChara1.setEnabled( false );
+		mButton_WriteHello.setEnabled( false );
+		mButton_WriteWorld.setEnabled( false );
 
 		// デバイスアドレスが空でなければ、接続ボタンを有効にする。
 		if( !mDeviceAddress.equals( "" ) )
@@ -381,6 +418,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			setCharacteristicNotification( UUID_SERVICE_PRIVATE, UUID_CHARACTERISTIC_PRIVATE1, mCheckBox_NotifyChara1.isChecked() );
 			return;
 		}
+		if( mButton_WriteHello.getId() == v.getId() )
+		{
+			mButton_WriteHello.setEnabled( false );    // 書き込みボタンの無効化（連打対策）
+			mButton_WriteWorld.setEnabled( false );    // 書き込みボタンの無効化（連打対策）
+			writeCharacteristic( UUID_SERVICE_PRIVATE, UUID_CHARACTERISTIC_PRIVATE2, "Hello" );
+			return;
+		}
+		if( mButton_WriteWorld.getId() == v.getId() )
+		{
+			mButton_WriteHello.setEnabled( false );    // 書き込みボタンの無効化（連打対策）
+			mButton_WriteWorld.setEnabled( false );    // 書き込みボタンの無効化（連打対策）
+			writeCharacteristic( UUID_SERVICE_PRIVATE, UUID_CHARACTERISTIC_PRIVATE2, "World" );
+			return;
+		}
 	}
 
 	// 接続
@@ -425,6 +476,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		mButton_ReadChara2.setEnabled( false );
 		mCheckBox_NotifyChara1.setChecked( false );
 		mCheckBox_NotifyChara1.setEnabled( false );
+		mButton_WriteHello.setEnabled( false );
+		mButton_WriteWorld.setEnabled( false );
 	}
 
 	// キャラクタリスティックの読み込み
@@ -450,5 +503,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		BluetoothGattDescriptor descriptor = blechar.getDescriptor( UUID_NOTIFY );
 		descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE );
 		mBluetoothGatt.writeDescriptor( descriptor );
+	}
+
+	// キャラクタリスティックの書き込み
+	private void writeCharacteristic( UUID uuid_service, UUID uuid_characteristic, String string )
+	{
+		if( null == mBluetoothGatt )
+		{
+			return;
+		}
+		BluetoothGattCharacteristic blechar = mBluetoothGatt.getService( uuid_service ).getCharacteristic( uuid_characteristic );
+		blechar.setValue( string );
+		mBluetoothGatt.writeCharacteristic( blechar );
 	}
 }

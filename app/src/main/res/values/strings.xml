@@ -17,6 +17,8 @@
     <string name="chara1">Chara1 : </string>
     <string name="chara2">Chara2 : </string>
     <string name="chara1_notify">Chara1(Notify) : </string>
+    <string name="hello">Hello</string>
+    <string name="world">World</string>
 
     <!-- DeviceListActivity トースト用 -->
     <string name="unknown_device">Unknown device</string>
