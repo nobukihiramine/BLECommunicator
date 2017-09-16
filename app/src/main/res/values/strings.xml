@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">BLE Communicator</string>
+
+    <!-- MainActivity トースト用 -->
+    <string name="ble_is_not_supported">BLE is not supported</string>
+    <string name="bluetooth_is_not_supported">Bluetooth is not supported.</string>
+    <string name="bluetooth_is_not_working">Bluetooth is not working.</string>
+</resources>
