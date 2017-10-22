@@ -2,7 +2,7 @@
 Bluetooth Low Energy (BLE) モジュールと通信をする「BLE通信ソフト」
 
 ## Screenshots : スクリーンショット
-<img src="screenshots/screenshot_01_first.png" width="256" alt="Screenshot"/> <img src="screenshots/screenshot_02_restored.png" width="256" alt="Screenshot"/>
+<img src="screenshots/screenshot_01.png" width="240" alt="Screenshot"/> <img src="screenshots/screenshot_02.png" width="240" alt="Screenshot"/> <img src="screenshots/screenshot_03.png" width="240" alt="Screenshot"/>
 
 ## Requirements : 必要条件、依存関係
 - Android Studio 2.3.3
