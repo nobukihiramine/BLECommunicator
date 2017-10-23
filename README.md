@@ -7,7 +7,7 @@ http://www.hiramine.com/programming/blecommunicator/index.html
 
 ## Requirements : 必要条件、依存関係
 - Android Studio 2.3.3
-- Android SDK 25
+- Android SDK 21
 - Android Build Tools v26.0.0
 - Android Support Repository
 
